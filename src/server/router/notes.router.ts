@@ -1,7 +1,7 @@
 // server/router/notes.router.ts
 import { publicProcedure, router } from '../trpc';
 import { z } from 'zod';
-import { supabase } from '@/app/lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 
 export const notesRouter = router({
   getAllNotes: publicProcedure.query(async () => {
@@ -12,7 +12,6 @@ export const notesRouter = router({
         throw new Error('Failed to fetch notes');
       }
 
-      console.log('data', data);
       return data;
     } catch (error) {
       console.error('Error fetching notes:', error);

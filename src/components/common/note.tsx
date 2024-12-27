@@ -1,11 +1,10 @@
 'use client';
 
-import { clientApi } from '@/app/_trpc/client';
 // import { clientApi } from '@/app/_trpc/client';
 import React, { useEffect, useRef, useState } from 'react';
 
 function Note() {
-  const { data: notes } = clientApi.notes.getAllNotes.useQuery();
+  // const { data: notes } = clientApi.notes.getAllNotes.useQuery();
   const [inputValue, setInputValue] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -20,7 +19,7 @@ function Note() {
     }
   });
 
-  console.log(notes);
+  // console.log(notes);
 
   return (
     <div>
