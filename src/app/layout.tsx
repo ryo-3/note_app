@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import type { Metadata } from 'next';
+import TrpcProvider from './_trpc/provider';
+import { Provider as JotaiProvider } from 'jotai';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "note",
-  description: "メモ帳アプリです",
+  title: 'note',
+  description: 'メモ帳アプリです',
 };
 
 export default function RootLayout({
@@ -13,7 +15,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <TrpcProvider>
+          <JotaiProvider>
+            {/* <Loading /> */}
+            {children}
+          </JotaiProvider>
+        </TrpcProvider>
+      </body>
     </html>
   );
 }

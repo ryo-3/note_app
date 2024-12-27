@@ -1,8 +1,11 @@
 'use client';
 
+import { clientApi } from '@/app/_trpc/client';
+// import { clientApi } from '@/app/_trpc/client';
 import React, { useEffect, useRef, useState } from 'react';
 
 function Note() {
+  const { data: notes } = clientApi.notes.getAllNotes.useQuery();
   const [inputValue, setInputValue] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -16,6 +19,8 @@ function Note() {
       textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
     }
   });
+
+  console.log(notes);
 
   return (
     <div>
