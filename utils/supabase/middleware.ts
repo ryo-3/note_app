@@ -9,7 +9,7 @@ export async function updateSession(request: NextRequest) {
   const cookies = request.cookies.getAll();
 
   // クッキー情報をログに出力
-  console.log('クッキー情報:', cookies);
+  // console.log('クッキー情報:', cookies);
 
   // Supabaseクライアントを作成
   const supabase = createServerClient(

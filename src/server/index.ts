@@ -1,9 +1,9 @@
-import { authRouter } from './router/atuh.routert';
+// import { authRouter } from './router/atuh.routert';
 import { notesRouter } from './router/notes.router';
 import { router } from './trpc';
 
 export const appRouter = router({
-  auth: authRouter,
+  // auth: authRouter,
   notes: notesRouter,
 });
 
