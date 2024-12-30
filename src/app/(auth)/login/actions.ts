@@ -43,19 +43,19 @@ export async function otp(formData: {
     return { success: false, errorCode: 'user_not_found' };
   }
 
-  // ロール情報取得（ロールが見つからなくてもエラーにはしない）
-  let userRole: string | undefined;
-  const { data: roleData, error: roleError } = await supabase
-    .from('user_roles')
-    .select('role')
-    .eq('user_id', userData.user.id)
-    .single();
+  // // ロール情報取得（ロールが見つからなくてもエラーにはしない）
+  // let userRole: string | undefined;
+  // const { data: roleData, error: roleError } = await supabase
+  //   .from('user_roles')
+  //   .select('role')
+  //   .eq('user_id', userData.user.id)
+  //   .single();
 
-  if (roleError || !roleData) {
-    console.log('ロール情報取得エラー（ただし処理は続行します）:', roleError || 'ロール情報なし');
-  } else {
-    userRole = roleData.role; // ロールが見つかった場合のみ設定
-  }
+  // if (roleError || !roleData) {
+  //   console.log('ロール情報取得エラー（ただし処理は続行します）:', roleError || 'ロール情報なし');
+  // } else {
+  //   userRole = roleData.role; // ロールが見つかった場合のみ設定
+  // }
 
   // クッキー設定（サーバーサイドで）
   supabase.auth.setSession({
@@ -63,7 +63,8 @@ export async function otp(formData: {
     refresh_token: session.refresh_token,
   });
 
-  return { success: true, userRole };
+  // return { success: true, userRole };
+  return { success: true /*, userRole*/ };
 }
 
 // OTP送信
@@ -71,7 +72,7 @@ export async function sendOtpToEmail(data: { email: string }) {
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithOtp({
     email: data.email,
-    options: { shouldCreateUser: false },
+    // options: { shouldCreateUser: false },
   });
 
   if (error) {

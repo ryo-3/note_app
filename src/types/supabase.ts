@@ -3,6 +3,38 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      note_categories: {
+        Row: {
+          created_at: string;
+          id: number;
+          name: string;
+          updated_at: string | null;
+          user_notes_id: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          id?: number;
+          name: string;
+          updated_at?: string | null;
+          user_notes_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          id?: number;
+          name?: string;
+          updated_at?: string | null;
+          user_notes_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'note_categories_user_notes_id_fkey';
+            columns: ['user_notes_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_notes';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       notes: {
         Row: {
           content: string;
@@ -10,7 +42,7 @@ export type Database = {
           id: string;
           title: string;
           updated_at: string;
-          user_id: string;
+          user_notes_id: string;
         };
         Insert: {
           content?: string;
@@ -18,7 +50,7 @@ export type Database = {
           id?: string;
           title?: string;
           updated_at?: string;
-          user_id?: string;
+          user_notes_id?: string;
         };
         Update: {
           content?: string;
@@ -26,11 +58,34 @@ export type Database = {
           id?: string;
           title?: string;
           updated_at?: string;
-          user_id?: string;
+          user_notes_id?: string;
         };
         Relationships: [
           {
-            foreignKeyName: 'note_user_id_fkey';
+            foreignKeyName: 'notes_user_notes_id_fkey';
+            columns: ['user_notes_id'];
+            isOneToOne: false;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      user_notes: {
+        Row: {
+          id: string;
+          user_id: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'user_notes_user_id_fkey';
             columns: ['user_id'];
             isOneToOne: false;
             referencedRelation: 'users';
@@ -41,21 +96,18 @@ export type Database = {
       users: {
         Row: {
           created_at: string;
-          email: string;
           id: string;
           updated_at: string;
           user_name: string | null;
         };
         Insert: {
           created_at?: string;
-          email: string;
           id?: string;
           updated_at?: string;
           user_name?: string | null;
         };
         Update: {
           created_at?: string;
-          email?: string;
           id?: string;
           updated_at?: string;
           user_name?: string | null;
@@ -81,12 +133,16 @@ export type Database = {
 type PublicSchema = Database[Extract<keyof Database, 'public'>];
 
 export type Tables<
-  PublicTableNameOrOptions extends keyof (PublicSchema['Tables'] & PublicSchema['Views']) | { schema: keyof Database },
+  PublicTableNameOrOptions extends
+    | keyof (PublicSchema['Tables'] & PublicSchema['Views'])
+    | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions['schema']]['Tables'] & Database[PublicTableNameOrOptions['schema']]['Views'])
+    ? keyof (Database[PublicTableNameOrOptions['schema']]['Tables'] &
+        Database[PublicTableNameOrOptions['schema']]['Views'])
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions['schema']]['Tables'] & Database[PublicTableNameOrOptions['schema']]['Views'])[TableName] extends {
+  ? (Database[PublicTableNameOrOptions['schema']]['Tables'] &
+      Database[PublicTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R;
     }
     ? R
@@ -149,7 +205,9 @@ export type Enums<
     : never;
 
 export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends keyof PublicSchema['CompositeTypes'] | { schema: keyof Database },
+  PublicCompositeTypeNameOrOptions extends
+    | keyof PublicSchema['CompositeTypes']
+    | { schema: keyof Database },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof Database;
   }
