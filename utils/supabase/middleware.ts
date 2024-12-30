@@ -39,7 +39,7 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getSession();
 
   // セッション情報をログ出力
-  // console.log("Middleware セッション情報:", session);
+  console.log('Middleware セッション情報:', session);
   // console.log("クッキー情報（再確認）:", cookies);
 
   if (session?.access_token) {
