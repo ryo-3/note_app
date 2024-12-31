@@ -14,7 +14,7 @@ export async function createClient() {
       cookies: {
         get(name: string) {
           const cookieValue = cookieStore.get(name)?.value || null;
-          console.log(`Get Cookie: ${name} ->`, cookieValue); // クッキー取得ログ
+          // console.log(`Get Cookie: ${name} ->`, cookieValue); // クッキー取得ログ
           return cookieValue; // クッキーからアクセストークンを取得
         },
         set(name: string, value: string, options: CookieOptions) {
@@ -24,7 +24,7 @@ export async function createClient() {
               value,
               ...options,
             } as ResponseCookie;
-            console.log(`Set Cookie: ${name} ->`, responseCookie); // クッキー設定ログ
+            // console.log(`Set Cookie: ${name} ->`, responseCookie); // クッキー設定ログ
             cookieStore.set(responseCookie);
           } catch (error) {
             console.error(`Error setting cookie ${name}:`, error); // エラーログ

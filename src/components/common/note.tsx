@@ -1,38 +1,35 @@
 'use client';
 
-// import { clientApi } from '@/app/_trpc/client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
+import { clientApi } from '@/app/_trpc/client';
+import NoteItem from './note-item';
+import NoteList from './note-list';
 
-function Note() {
-  // const { data: notes } = clientApi.notes.getAllNotes.useQuery();
-  const [inputValue, setInputValue] = useState('');
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+const Note = () => {
+  const { data: notes = [], isLoading, error } = clientApi.notes.getAllNotes.useQuery();
+  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
 
-  const handeleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInputValue(e.target.value);
-  };
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Failed to load notes.</p>;
 
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
-    }
-  });
-
-  // console.log(notes);
+  const selectedNote = notes.find((note) => note.id === selectedNoteId) || notes[0];
 
   return (
-    <div>
-      <textarea
-        ref={textareaRef}
-        value={inputValue}
-        onChange={handeleChange}
-        rows={10}
-        placeholder=""
-        className="w-full focus:outline-none resize-none"
-      />
+    <div className="flex">
+      <div className="px-4 py-3 w-[200px] border-r-2 min-h-screen border-black">
+        <button>新規追加</button>
+        <NoteList
+          notes={notes}
+          selectedNoteId={selectedNote?.id || null}
+          onSelect={(id) => setSelectedNoteId(id)}
+        />
+      </div>
+
+      <div className="px-10 pt-5 pb-20 w-full">
+        {selectedNote && <NoteItem note={selectedNote} />}
+      </div>
     </div>
   );
-}
+};
 
 export default Note;
