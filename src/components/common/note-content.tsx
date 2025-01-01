@@ -4,7 +4,13 @@ import { clientApi } from '@/app/_trpc/client';
 import React, { useEffect, useState, useRef } from 'react';
 import useAutoResizeTextArea from '@/hooks/useAutoResizeTextArea';
 
-function NoteContent({ note }: { note: { id: string; title: string; content: string } }) {
+function NoteContent({
+  note,
+  onUpdateNote,
+}: {
+  note: { id: string; title: string; content: string };
+  onUpdateNote: (updatedNote: { id: string; title: string }) => void;
+}) {
   const updateNoteMutation = clientApi.notes.updateNote.useMutation();
 
   const [title, setTitle] = useState(note.title);
@@ -47,11 +53,13 @@ function NoteContent({ note }: { note: { id: string; title: string; content: str
   const handleChangeTitle = (newTitle: string) => {
     setTitle(newTitle);
     setHasChanges(true);
+    onUpdateNote({ id: note.id, title: newTitle });
   };
 
   const handleChangeContent = (newContent: string) => {
     setContent(newContent);
     setHasChanges(true);
+    onUpdateNote({ id: note.id, title });
   };
 
   // 自動保存処理

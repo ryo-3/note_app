@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { clientApi } from '@/app/_trpc/client';
 import NoteList from './note-list';
 import NoteContent from './note-content';
@@ -8,7 +8,19 @@ import NoteContent from './note-content';
 const Note = () => {
   const { data: notes = [], isLoading, error, refetch } = clientApi.notes.getAllNotes.useQuery();
   const createNote = clientApi.notes.createNote.useMutation();
+  const [noteState, setNoteState] = useState(notes);
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+
+  const previousTitlesRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    // notes のタイトルだけを取り出して文字列化
+    const titlesString = JSON.stringify(notes.map((note) => note.title));
+    if (previousTitlesRef.current !== titlesString) {
+      setNoteState(notes); // タイトルが変わった場合のみ状態を更新
+      previousTitlesRef.current = titlesString; // 前回のタイトルを更新
+    }
+  }, [notes]);
 
   const handeleCreateNewNote = async () => {
     try {
@@ -28,6 +40,17 @@ const Note = () => {
     }
   };
 
+  const handleUpdateNote = (updatedNote: { id: string; title: string }) => {
+    // console.log('親コンポーネントで受け取った更新内容:', updatedNote);
+
+    // 該当ノートのタイトルを更新
+    setNoteState((prevNotes) =>
+      prevNotes.map((note) =>
+        note.id === updatedNote.id ? { ...note, title: updatedNote.title } : note
+      )
+    );
+  };
+
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Failed to load notes.</p>;
 
@@ -43,14 +66,14 @@ const Note = () => {
           新規追加
         </button>
         <NoteList
-          notes={notes.map((note) => ({ id: note.id, title: note.title }))}
+          notes={noteState.map((note) => ({ id: note.id, title: note.title }))}
           selectedNoteId={selectedNote?.id || null}
           onSelect={(id) => setSelectedNoteId(id)}
         />
       </div>
 
       <div className="px-6 pt-5 pb-20 w-full">
-        {selectedNote && <NoteContent note={selectedNote} />}
+        {selectedNote && <NoteContent note={selectedNote} onUpdateNote={handleUpdateNote} />}
       </div>
     </div>
   );
