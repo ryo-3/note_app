@@ -11,21 +11,10 @@ const Note = () => {
   const { data: notes = [], isLoading, error, refetch } = clientApi.notes.getAllNotes.useQuery();
   const { noteState, setNoteState } = useSyncNotes(notes);
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
-
-  const handleUpdateNote = (updatedNote: { id: string; title: string }) => {
-    console.log('handleUpdateNote が呼び出されました:', updatedNote);
-    setNoteState((prevNotes) =>
-      prevNotes.map((note) => {
-        const isMatch = note.id === updatedNote.id;
-        return isMatch ? { ...note, title: updatedNote.title } : note;
-      })
-    );
-  };
+  const selectedNote = notes.find((note) => note.id === selectedNoteId) || notes[0];
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Failed to load notes.</p>;
-
-  const selectedNote = notes.find((note) => note.id === selectedNoteId) || notes[0];
 
   return (
     <div className="h-screen">
@@ -42,7 +31,7 @@ const Note = () => {
         }
         content={
           <div className="px-6 pt-5 pb-20 w-full h-full">
-            {selectedNote && <NoteContent note={selectedNote} onUpdateNote={handleUpdateNote} />}
+            {selectedNote && <NoteContent note={selectedNote} setNoteState={setNoteState} />}
           </div>
         }
       />

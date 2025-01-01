@@ -6,10 +6,10 @@ import useAutoResizeTextArea from '@/hooks/useAutoResizeTextArea';
 
 function NoteContent({
   note,
-  onUpdateNote,
+  setNoteState,
 }: {
   note: { id: string; title: string; content: string };
-  onUpdateNote: (updatedNote: { id: string; title: string }) => void;
+  setNoteState: React.Dispatch<React.SetStateAction<{ id: string; title: string }[]>>;
 }) {
   const updateNoteMutation = clientApi.notes.updateNote.useMutation();
 
@@ -59,20 +59,30 @@ function NoteContent({
       throw error;
     }
   };
-
-  // ノートの変更検知
   const handleChangeTitle = (newTitle: string) => {
     console.log('タイトルが変更されました:', newTitle);
     setTitle(newTitle);
     setHasChanges(true);
-    onUpdateNote({ id: note.id, title: newTitle });
+
+    // 直接ノート状態を更新
+    setNoteState((prevNotes) =>
+      prevNotes.map((prevNote) =>
+        prevNote.id === note.id ? { ...prevNote, title: newTitle } : prevNote
+      )
+    );
   };
 
   const handleChangeContent = (newContent: string) => {
     console.log('内容が変更されました:', newContent);
     setContent(newContent);
     setHasChanges(true);
-    onUpdateNote({ id: note.id, title });
+
+    // 直接ノート状態を更新
+    setNoteState((prevNotes) =>
+      prevNotes.map((prevNote) =>
+        prevNote.id === note.id ? { ...prevNote, content: newContent } : prevNote
+      )
+    );
   };
 
   // 自動保存処理
@@ -92,13 +102,9 @@ function NoteContent({
   useEffect(() => {
     console.log('ノートが切り替えられました (note.id):', note.id);
 
-    const saveAndInitialize = async () => {
+    const initializeNote = () => {
       if (hasChanges && previousNoteIdRef.current) {
-        console.log(
-          '切り替え時に未保存の変更が検知されました: 保存を実行します (保存対象のノートID):',
-          previousNoteIdRef.current
-        );
-        await handleSave(previousNoteIdRef.current); // 元のノートIDで保存
+        handleSave(previousNoteIdRef.current); // 保存処理
       }
 
       // 新しいノートの内容を初期化
@@ -107,10 +113,9 @@ function NoteContent({
       setHasChanges(false); // 初期化後は変更フラグをリセット
       previousNoteIdRef.current = note.id; // 新しいノートIDを保持
     };
-
-    saveAndInitialize();
+    initializeNote();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [note]); // noteが変更された時に実行
+  }, [note]);
 
   return (
     <div>
