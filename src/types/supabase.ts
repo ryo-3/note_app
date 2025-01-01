@@ -65,7 +65,7 @@ export type Database = {
             foreignKeyName: 'notes_user_notes_id_fkey';
             columns: ['user_notes_id'];
             isOneToOne: false;
-            referencedRelation: 'users';
+            referencedRelation: 'user_notes';
             referencedColumns: ['id'];
           },
         ];

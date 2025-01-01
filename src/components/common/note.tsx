@@ -43,7 +43,7 @@ const Note = () => {
           新規追加
         </button>
         <NoteList
-          notes={notes}
+          notes={notes.map((note) => ({ id: note.id, title: note.title }))}
           selectedNoteId={selectedNote?.id || null}
           onSelect={(id) => setSelectedNoteId(id)}
         />
