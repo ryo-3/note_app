@@ -19,7 +19,7 @@ const NoteList = ({
             <button
               onClick={() => onSelect(note.id)}
               className={`block w-full text-left p-2 rounded ${
-                selectedNoteId === note.id ? 'bg-primary/80 text-white' : 'hover:bg-muted'
+                selectedNoteId === note.id ? 'bg-[#c9f6df]' : 'hover:bg-[#e4f5ec]'
               }`}
             >
               {note.title}

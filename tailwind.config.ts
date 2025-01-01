@@ -65,6 +65,12 @@ export default {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
+      fontFamily: {
+        'rubik-bubbles': ['"Rubik Bubbles"', 'system-ui', 'sans-serif'],
+        'noto-sans-jp': ['"Noto Sans JP"', 'serif'],
+        'm-plus-rounded': ['"M PLUS Rounded 1c"', 'serif'],
+        'yusei-magic': ['"Yusei Magic"', 'serif'],
+      },
     },
   },
   plugins: [animate],
