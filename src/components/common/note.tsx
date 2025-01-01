@@ -43,13 +43,15 @@ const Note = () => {
   };
 
   const handleUpdateNote = (updatedNote: { id: string; title: string }) => {
-    // console.log('親コンポーネントで受け取った更新内容:', updatedNote);
+    console.log('handleUpdateNote が呼び出されました:', updatedNote);
 
     // 該当ノートのタイトルを更新
     setNoteState((prevNotes) =>
-      prevNotes.map((note) =>
-        note.id === updatedNote.id ? { ...note, title: updatedNote.title } : note
-      )
+      prevNotes.map((note) => {
+        const isMatch = note.id === updatedNote.id;
+        console.log(`検知: note.id=${note.id}, updatedNote.id=${updatedNote.id}, 一致=${isMatch}`);
+        return isMatch ? { ...note, title: updatedNote.title } : note;
+      })
     );
   };
 
