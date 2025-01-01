@@ -71,6 +71,7 @@ function NoteContent({
     return () => {
       if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [title, content]);
 
   // ノート切り替え時の保存と初期化
@@ -82,6 +83,7 @@ function NoteContent({
       setHasChanges(false); // フラグリセット
     };
     saveAndInitialize();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [note]);
 
   return (
