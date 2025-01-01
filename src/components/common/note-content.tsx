@@ -41,7 +41,7 @@ function NoteContent({
   const saveNoteToServer = async (params: { id: string; title: string; content: string }) => {
     try {
       const updatedNote = await updateNoteMutation.mutateAsync(params);
-      console.log('サーバーに保存されました:', updatedNote);
+      // console.log('サーバーに保存されました:', updatedNote);
       return updatedNote;
     } catch (error) {
       console.error('サーバー保存エラー:', error);
@@ -77,14 +77,17 @@ function NoteContent({
   // ノート切り替え時の保存と初期化
   useEffect(() => {
     const saveAndInitialize = async () => {
-      if (hasChanges) await handleSave();
-      setTitle(note.title);
-      setContent(note.content);
+      // ノートの内容を更新
+      setTitle(note.title); // 新しいノートのタイトルでstateを更新
+      setContent(note.content); // 新しいノートのcontentでstateを更新
       setHasChanges(false); // フラグリセット
+
+      // 変更があれば保存
+      if (hasChanges) await handleSave();
     };
     saveAndInitialize();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [note]);
+  }, [note]); // noteが変更された時に実行
 
   return (
     <div>

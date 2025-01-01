@@ -19,7 +19,7 @@ export const notesRouter = router({
         throw new Error('Failed to fetch notes');
       }
 
-      console.log('Fetched Notes:', notes);
+      // console.log('Fetched Notes:', notes);
       return notes;
     } catch (error) {
       console.error('Error in getAllNotes:', error);
@@ -85,13 +85,14 @@ export const notesRouter = router({
             title: input.title || ``,
             content: input.content || ``,
           })
-          .eq(`id`, input.id);
+          .eq(`id`, input.id)
+          .select();
 
         if (error) {
           console.error(`Note Update Error:`, error);
           throw new Error(`Failed to update note`);
         }
-        console.log(`Updated Note:`, note);
+        // console.log(`Updated Note:`, note);
         return note;
       } catch (error) {
         console.error(`Error in updateNote:`, error);

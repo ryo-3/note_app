@@ -68,7 +68,10 @@ const Note = () => {
         <NoteList
           notes={noteState.map((note) => ({ id: note.id, title: note.title }))}
           selectedNoteId={selectedNote?.id || null}
-          onSelect={(id) => setSelectedNoteId(id)}
+          onSelect={async (id) => {
+            setSelectedNoteId(id);
+            await refetch();
+          }}
         />
       </div>
 
