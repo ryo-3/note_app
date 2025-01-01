@@ -27,6 +27,7 @@ export const notesRouter = router({
     }
   }),
 
+  // メモの作成
   createNote: publicProcedure
     .input(
       z.object({
@@ -96,6 +97,35 @@ export const notesRouter = router({
         return note;
       } catch (error) {
         console.error(`Error in updateNote:`, error);
+        throw error;
+      }
+    }),
+
+  // メモの削除
+  deleteNote: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const supabase = await createClient();
+
+        const { data: deletedNote, error } = await supabase
+          .from(`notes`)
+          .delete()
+          .eq(`id`, input.id)
+          .select();
+
+        if (error) {
+          console.error(`Note Deletion Error:`, error);
+          throw new Error(`Failed to delete note`);
+        }
+
+        return deletedNote;
+      } catch (error) {
+        console.error(`Error in DeleteNote:`, error);
         throw error;
       }
     }),

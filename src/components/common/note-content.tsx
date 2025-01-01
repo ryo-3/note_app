@@ -3,13 +3,17 @@
 import { clientApi } from '@/app/_trpc/client';
 import React, { useEffect, useState, useRef } from 'react';
 import useAutoResizeTextArea from '@/hooks/useAutoResizeTextArea';
+import DeleteButton from './delete-button';
+import UndoButton from './undo-button';
 
 function NoteContent({
   note,
   setNoteState,
+  refetchNotes,
 }: {
   note: { id: string; title: string; content: string };
   setNoteState: React.Dispatch<React.SetStateAction<{ id: string; title: string }[]>>;
+  refetchNotes: () => Promise<void>;
 }) {
   const updateNoteMutation = clientApi.notes.updateNote.useMutation();
 
@@ -131,6 +135,10 @@ function NoteContent({
         className="w-full focus:outline-none resize-none p-2 rounded-lg bg-transparent"
       />
       {isSaving && <p className="text-gray-500 mt-2 pl-2"></p>}
+
+      <DeleteButton noteId={note.id} refetchNotes={refetchNotes} />
+
+      <UndoButton />
     </div>
   );
 }

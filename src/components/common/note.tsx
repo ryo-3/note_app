@@ -31,7 +31,15 @@ const Note = () => {
         }
         content={
           <div className="px-6 pt-5 pb-20 w-full h-full">
-            {selectedNote && <NoteContent note={selectedNote} setNoteState={setNoteState} />}
+            {selectedNote && (
+              <NoteContent
+                note={selectedNote}
+                setNoteState={setNoteState}
+                refetchNotes={async () => {
+                  await refetch();
+                }}
+              />
+            )}
           </div>
         }
       />
