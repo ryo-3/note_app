@@ -5,6 +5,7 @@ import { clientApi } from '@/app/_trpc/client';
 import NoteList from './note-list';
 import NoteContent from './note-content';
 import LogoutButton from './logout-button';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '../ui/resizable';
 
 const Note = () => {
   const { data: notes = [], isLoading, error, refetch } = clientApi.notes.getAllNotes.useQuery();
@@ -58,30 +59,36 @@ const Note = () => {
   const selectedNote = notes.find((note) => note.id === selectedNoteId) || notes[0];
 
   return (
-    <div className="flex">
-      <div className="px-4 pt-4 pb-5 w-[200px] border-r-2 min-h-screen border-gray-200 flex flex-col justify-between">
-        <div>
-          <button
-            className="bg-primary text-white font-bold w-full text-left p-2 rounded mb-3 hover:bg-primary/90 transition -100"
-            onClick={handeleCreateNewNote}
-          >
-            新規追加
-          </button>
-          <NoteList
-            notes={noteState.map((note) => ({ id: note.id, title: note.title }))}
-            selectedNoteId={selectedNote?.id || null}
-            onSelect={async (id) => {
-              setSelectedNoteId(id);
-              await refetch();
-            }}
-          />
-        </div>
-        <LogoutButton />
-      </div>
-
-      <div className="px-6 pt-5 pb-20 w-full">
-        {selectedNote && <NoteContent note={selectedNote} onUpdateNote={handleUpdateNote} />}
-      </div>
+    <div className="h-screen">
+      <ResizablePanelGroup direction="horizontal">
+        <ResizablePanel defaultSize={15} minSize={12} maxSize={30}>
+          <div className="px-4 pt-4 pb-5 h-full border-r-2 min-h-screen border-gray-200 flex flex-col justify-between">
+            <div>
+              <button
+                className="bg-primary text-white font-bold w-full text-left p-2 rounded mb-3 hover:bg-primary/90 transition -100"
+                onClick={handeleCreateNewNote}
+              >
+                新規追加
+              </button>
+              <NoteList
+                notes={noteState.map((note) => ({ id: note.id, title: note.title }))}
+                selectedNoteId={selectedNote?.id || null}
+                onSelect={async (id) => {
+                  setSelectedNoteId(id);
+                  await refetch();
+                }}
+              />
+            </div>
+            <LogoutButton />
+          </div>
+        </ResizablePanel>
+        <ResizableHandle />
+        <ResizablePanel>
+          <div className="px-6 pt-5 pb-20 w-full h-full">
+            {selectedNote && <NoteContent note={selectedNote} onUpdateNote={handleUpdateNote} />}
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 };

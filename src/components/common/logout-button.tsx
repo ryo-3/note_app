@@ -26,7 +26,7 @@ function LogoutButton() {
       {/* ログアウトボタン */}
       <div className="mt-5">
         <p
-          className="cursor-pointer px-2 py-2 flex items-center gap-2 rounded-lg text-center bg-gray-200 hover:bg-gray-300 transition"
+          className="cursor-pointer px-2 py-2 flex items-center gap-2 rounded-lg text-center hover:bg-gray-300 transition"
           onClick={() => setShowModal(true)} // モーダルを表示
         >
           <svg
