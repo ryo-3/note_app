@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createBrowserClient } from '@supabase/ssr';
 import type { Database } from '@/types/supabase'; // Database 型をインポート
 
 const supabaseUrl =
@@ -13,4 +13,4 @@ const supabaseAnonKey =
   })();
 
 // Supabase クライアントを型付きで作成
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+export const supabase = createBrowserClient<Database>(supabaseUrl, supabaseAnonKey);

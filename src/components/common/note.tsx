@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { clientApi } from '@/app/_trpc/client';
 import NoteList from './note-list';
 import NoteContent from './note-content';
+import LogoutButton from './logout-button';
 
 const Note = () => {
   const { data: notes = [], isLoading, error, refetch } = clientApi.notes.getAllNotes.useQuery();
@@ -58,21 +59,24 @@ const Note = () => {
 
   return (
     <div className="flex">
-      <div className="px-4 py-4 w-[200px] border-r-2 min-h-screen border-gray-200">
-        <button
-          className="bg-primary text-white font-bold w-full text-left p-2 rounded mb-3 hover:bg-primary/90 transition duration-300"
-          onClick={handeleCreateNewNote}
-        >
-          新規追加
-        </button>
-        <NoteList
-          notes={noteState.map((note) => ({ id: note.id, title: note.title }))}
-          selectedNoteId={selectedNote?.id || null}
-          onSelect={async (id) => {
-            setSelectedNoteId(id);
-            await refetch();
-          }}
-        />
+      <div className="px-4 pt-4 pb-5 w-[200px] border-r-2 min-h-screen border-gray-200 flex flex-col justify-between">
+        <div>
+          <button
+            className="bg-primary text-white font-bold w-full text-left p-2 rounded mb-3 hover:bg-primary/90 transition -100"
+            onClick={handeleCreateNewNote}
+          >
+            新規追加
+          </button>
+          <NoteList
+            notes={noteState.map((note) => ({ id: note.id, title: note.title }))}
+            selectedNoteId={selectedNote?.id || null}
+            onSelect={async (id) => {
+              setSelectedNoteId(id);
+              await refetch();
+            }}
+          />
+        </div>
+        <LogoutButton />
       </div>
 
       <div className="px-6 pt-5 pb-20 w-full">
