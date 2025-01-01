@@ -59,28 +59,24 @@ function NoteContent({
       throw error;
     }
   };
-  const handleChangeTitle = (newTitle: string) => {
-    console.log('タイトルが変更されました:', newTitle);
-    setTitle(newTitle);
+
+  const handleInputChange = (
+    fieldName: 'title' | 'content',
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const newValue = event.target.value;
+    console.log(`${fieldName}が変更されました:`, newValue);
+
+    if (fieldName === 'title') {
+      setTitle(newValue);
+    } else if (fieldName === 'content') {
+      setContent(newValue);
+    }
     setHasChanges(true);
 
-    // 直接ノート状態を更新
     setNoteState((prevNotes) =>
       prevNotes.map((prevNote) =>
-        prevNote.id === note.id ? { ...prevNote, title: newTitle } : prevNote
-      )
-    );
-  };
-
-  const handleChangeContent = (newContent: string) => {
-    console.log('内容が変更されました:', newContent);
-    setContent(newContent);
-    setHasChanges(true);
-
-    // 直接ノート状態を更新
-    setNoteState((prevNotes) =>
-      prevNotes.map((prevNote) =>
-        prevNote.id === note.id ? { ...prevNote, content: newContent } : prevNote
+        prevNote.id === note.id ? { ...prevNote, [fieldName]: newValue } : prevNote
       )
     );
   };
@@ -122,14 +118,14 @@ function NoteContent({
       <input
         type="text"
         value={title}
-        onChange={(e) => handleChangeTitle(e.target.value)}
+        onChange={(e) => handleInputChange(`title`, e)}
         placeholder="題名"
         className="w-full focus:outline-none border-gray-300 mb-2 text-lg py-1 px-2 rounded-lg bg-transparent"
       />
       <textarea
         ref={textareaRef}
         value={content}
-        onChange={(e) => handleChangeContent(e.target.value)}
+        onChange={(e) => handleInputChange(`content`, e)}
         rows={0}
         placeholder="内容"
         className="w-full focus:outline-none resize-none p-2 rounded-lg bg-transparent"
