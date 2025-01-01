@@ -18,21 +18,27 @@ function NoteContent({
   const [isSaving, setIsSaving] = useState(false); // 保存中フラグ
   const [hasChanges, setHasChanges] = useState(false); // 変更検知フラグ
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const previousNoteIdRef = useRef<string | null>(null); // 元のノートIDを保持
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // テキストエリアの高さ調整フック
   useAutoResizeTextArea(textareaRef, content);
 
   // 保存処理
-  const handleSave = async () => {
-    if (!hasChanges) {
-      console.log('保存処理スキップ: 変更がありません');
-      return; // 変更がない場合は保存しない
+  const handleSave = async (currentNoteId: string) => {
+    if (!hasChanges || currentNoteId !== previousNoteIdRef.current) {
+      console.log('保存処理スキップ: 条件が一致しません', {
+        hasChanges,
+        currentNoteId,
+        previousNoteId: previousNoteIdRef.current,
+      });
+      return;
     }
-    console.log('保存を開始します:', { title, content });
+
+    console.log('保存を開始します:', { id: currentNoteId, title, content });
     setIsSaving(true);
     try {
-      await saveNoteToServer({ id: note.id, title, content });
+      await saveNoteToServer({ id: currentNoteId, title, content });
       setHasChanges(false); // 保存後に変更フラグをリセット
     } catch (error) {
       console.error('保存に失敗しました:', error);
@@ -46,14 +52,7 @@ function NoteContent({
     console.log('サーバーに送信するデータ:', params);
     try {
       const updatedNote = await updateNoteMutation.mutateAsync(params);
-      if (Array.isArray(updatedNote)) {
-        // 配列の場合、各アイテムを個別にログ出力
-        updatedNote.forEach((note, index) => {
-          console.log(`サーバーに保存されたデータ (${index + 1}):`, note);
-        });
-      } else {
-        console.log('サーバーに保存されたデータ:', updatedNote);
-      }
+      console.log('サーバーに保存されたデータ:', updatedNote);
       return updatedNote;
     } catch (error) {
       console.error('サーバー保存エラー:', error);
@@ -79,9 +78,9 @@ function NoteContent({
   // 自動保存処理
   useEffect(() => {
     if (hasChanges) {
-      console.log('変更が検知されました: 自動保存をスケジュールします');
+      console.log('変更が検知されました: 自動保存をスケジュールします (現在のノートID):', note.id);
       if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current); // 既存のタイマーをクリア
-      saveTimeoutRef.current = setTimeout(() => handleSave(), 1000);
+      saveTimeoutRef.current = setTimeout(() => handleSave(note.id), 1000);
     }
     return () => {
       if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
@@ -89,19 +88,26 @@ function NoteContent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [title, content]);
 
-  // ノート切り替え時の保存と初期化
+  // ノート切り替え時の処理
   useEffect(() => {
-    console.log('ノートが切り替えられました:', note);
-    const saveAndInitialize = async () => {
-      setTitle(note.title); // 新しいノートのタイトルでstateを更新
-      setContent(note.content); // 新しいノートのcontentでstateを更新
-      setHasChanges(false); // フラグリセット
+    console.log('ノートが切り替えられました (note.id):', note.id);
 
-      if (hasChanges) {
-        console.log('切り替え時に未保存の変更が検知されました: 保存を実行します');
-        await handleSave();
+    const saveAndInitialize = async () => {
+      if (hasChanges && previousNoteIdRef.current) {
+        console.log(
+          '切り替え時に未保存の変更が検知されました: 保存を実行します (保存対象のノートID):',
+          previousNoteIdRef.current
+        );
+        await handleSave(previousNoteIdRef.current); // 元のノートIDで保存
       }
+
+      // 新しいノートの内容を初期化
+      setTitle(note.title);
+      setContent(note.content);
+      setHasChanges(false); // 初期化後は変更フラグをリセット
+      previousNoteIdRef.current = note.id; // 新しいノートIDを保持
     };
+
     saveAndInitialize();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [note]); // noteが変更された時に実行
@@ -123,7 +129,7 @@ function NoteContent({
         placeholder="内容"
         className="w-full focus:outline-none resize-none p-2 rounded-lg bg-transparent"
       />
-      {isSaving && <p className="text-gray-500 mt-2 pl-2">保存中...</p>}
+      {isSaving && <p className="text-gray-500 mt-2 pl-2"></p>}
     </div>
   );
 }

@@ -44,12 +44,10 @@ const Note = () => {
 
   const handleUpdateNote = (updatedNote: { id: string; title: string }) => {
     console.log('handleUpdateNote が呼び出されました:', updatedNote);
-
-    // 該当ノートのタイトルを更新
     setNoteState((prevNotes) =>
       prevNotes.map((note) => {
         const isMatch = note.id === updatedNote.id;
-        console.log(`検知: note.id=${note.id}, updatedNote.id=${updatedNote.id}, 一致=${isMatch}`);
+        // console.log(`検知: note.id=${note.id}, updatedNote.id=${updatedNote.id}, 一致=${isMatch}`);
         return isMatch ? { ...note, title: updatedNote.title } : note;
       })
     );
